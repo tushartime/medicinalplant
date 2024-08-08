@@ -658,7 +658,7 @@ st.markdown("""
             padding: 10px 0;
         }
     </style>
-    <div class="footer">
+    <div class="footer" align='left'>
         Made by Shivam Kumar Jha
     </div>
 """, unsafe_allow_html=True)
