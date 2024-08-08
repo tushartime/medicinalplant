@@ -1,8 +1,11 @@
-#Library imports
 import numpy as np
 import streamlit as st
-import cv2
 from keras.models import load_model
+from PIL import Image
+
+# Load the model
+model = load_model('medicinalleaves2.h5')
+
 
 
 #Loading the Model
@@ -605,41 +608,45 @@ properties=[
      'May have antioxidant properties']
 ]
 
-#Setting Title of App
+# Setting Title of App
 st.title("Medicinal Plant Identification")
 st.markdown("Upload an image of the Plant")
 
-#Uploading the plant image
+# Uploading the plant image
 plant_image = st.file_uploader("Choose an image...", type="jpg")
 submit = st.button('Predict')
-#On predict button click
+
+# On predict button click
 if submit:
-
     if plant_image is not None:
-
-        # Convert the file to an opencv image.
-        file_bytes = np.asarray(bytearray(plant_image.read()), dtype=np.uint8)
-        opencv_image = cv2.imdecode(file_bytes, 1)
-
-
+        # Open image using Pillow
+        image = Image.open(plant_image)
 
         # Displaying the image
-        st.image(opencv_image, channels="BGR")
-        #Resizing the image
-        opencv_image = cv2.resize(opencv_image, (299,299))
-        #Convert image to 4 Dimension
-        opencv_image.shape = (1,299,299,3)
-        #Make Prediction
-        Y_pred = model.predict(opencv_image)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        st.title(str("The Plant Species is "+CLASS_NAMES[np.argmax(Y_pred)]))
+        # Resizing the image
+        image = image.resize((299, 299))
+
+        # Convert image to numpy array
+        image_np = np.array(image)
+
+        # Expand dimensions to match model input shape
+        image_np = np.expand_dims(image_np, axis=0)
+
+        # Make prediction
+        Y_pred = model.predict(image_np)
+
+        # Display the prediction
+        predicted_class = CLASS_NAMES[np.argmax(Y_pred)]
+        st.title(f"The Plant Species is {predicted_class}")
         st.title("\nProperties-")
-        
-        for i in properties[np.argmax(Y_pred)]:
-            st.text(i)
 
+        # Display the properties of the predicted plant
+        for property in properties[np.argmax(Y_pred)]:
+            st.text(property)
 
-
+# Footer
 st.markdown("""
     <style>
         .footer {
@@ -650,9 +657,8 @@ st.markdown("""
             text-align: right;
             padding: 10px 0;
         }
-
     </style>
     <div class="footer">
-        Made by Shivam Kumar Jha and Vasu Pratap Singh
+        Made by Shivam Kumar Jha
     </div>
 """, unsafe_allow_html=True)
