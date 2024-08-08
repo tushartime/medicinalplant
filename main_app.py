@@ -652,13 +652,13 @@ st.markdown("""
         .footer {
             position: fixed;
             bottom: 0;
-            left: 0;
+            left: 100;
             width: 100%;
-            text-align: right;
+            text-align: left;
             padding: 10px 0;
         }
     </style>
-    <div class="footer" align='left'>
+    <div class="footer">
         Made by Shivam Kumar Jha
     </div>
 """, unsafe_allow_html=True)
